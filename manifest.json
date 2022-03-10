@@ -7,6 +7,12 @@
     "service_worker": "background.js"
   },
   "permissions": ["storage", "activeTab", "scripting", "debugger"],
+  "web_accessible_resources": [
+    { 
+      "resources": ["data/cases.json"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

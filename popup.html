@@ -4,8 +4,10 @@
     <link rel="stylesheet" href="button.css">
   </head>
   <body>
-    <button id="input-btn">Start Input</button>
-    <button id="clear-btn">Clear Input</button>
+    <label>Select a Case: </label>
+    <select id="cases" onchange="getSelectedCase(this)"></select>
+    <button id="input-btn" disabled>Start Input</button>
+    <button id="clear-btn" disabled>Clear Input</button>
     <script src="popup.js"></script>
   </body>
 </html>

@@ -1,0 +1,56 @@
+[
+    {
+        "id": "en",
+        "name": "Basic English Input",
+        "keySequence": [
+            {
+                "command": "Input.dispatchKeyEvent",
+                "key": {
+                    "type": "keyDown", 
+                    "key": "a",
+                    "code": "KeyA",
+                    "text": "a",
+                    "windowsVirtualKeyCode": 65,
+                    "nativeVirtualKeyCode": 65,
+                    "macCharCode": 65
+                }
+            },
+            {
+                "command": "Input.dispatchKeyEvent",
+                "key": {
+                    "type": "keyUp", 
+                    "key": "a",
+                    "code": "KeyA",
+                    "text": "a",
+                    "windowsVirtualKeyCode": 65,
+                    "nativeVirtualKeyCode": 65,
+                    "macCharCode": 65
+                }
+            },
+            {
+                "command": "Input.dispatchKeyEvent",
+                "key": {
+                    "type": "keyDown", 
+                    "key": "b",
+                    "code": "KeyB",
+                    "text": "b",
+                    "windowsVirtualKeyCode": 66,
+                    "nativeVirtualKeyCode": 66,
+                    "macCharCode": 66
+                }
+            },
+            {
+                "command": "Input.dispatchKeyEvent",
+                "key": {
+                    "type": "keyUp", 
+                    "key": "b",
+                    "code": "KeyB",
+                    "text": "b",
+                    "windowsVirtualKeyCode": 66,
+                    "nativeVirtualKeyCode": 66,
+                    "macCharCode": 66
+                }
+            }
+        ]
+    }
+]

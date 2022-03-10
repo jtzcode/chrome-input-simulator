@@ -1,43 +1,5 @@
 let text = 'Hello Simulator!';
 
-let keydownEvent = {
-  type: 'keyDown', 
-  key: "a",
-  code: "KeyA",
-  text: 'a',
-  windowsVirtualKeyCode: 65,
-  nativeVirtualKeyCode: 65,
-  macCharCode: 65
-};
-
-let keyupEvent = {
-  type: 'keyUp', 
-  windowsVirtualKeyCode: 65,
-  nativeVirtualKeyCode: 65,
-  macCharCode: 65,
-  key: "a",
-  code: "KeyA"
-};
-
-let keydownEvent2 = {
-  type: 'keyDown', 
-  key: "b",
-  code: "KeyB",
-  text: 'b',
-  windowsVirtualKeyCode: 66,
-  nativeVirtualKeyCode: 66,
-  macCharCode: 66
-};
-
-let keyupEvent2 = {
-  type: 'keyUp', 
-  windowsVirtualKeyCode: 66,
-  nativeVirtualKeyCode: 66,
-  macCharCode: 66,
-  key: "b",
-  code: "KeyB"
-};
-
 let keydownEvent3 = {
   type: 'keyDown', 
   key: "Backspace",
@@ -54,6 +16,9 @@ let keyupEvent3 = {
   nativeVirtualKeyCode: 8,
   macCharCode: 8
 };
+let currentCase = null;
+let casePromises = [];
+
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({ text });
@@ -61,20 +26,23 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  if(message.command === "input"){
+  if(message.command === "input") {
+    if (currentCase && currentCase.keySequence) {
       chrome.tabs.query({active: true}, function(tabs) {
           chrome.debugger.attach({ tabId: tabs[0].id }, "1.0");
-          Promise.all([
-            chrome.debugger.sendCommand({ tabId: tabs[0].id }, 'Input.dispatchKeyEvent', keydownEvent),
-            chrome.debugger.sendCommand({ tabId: tabs[0].id }, 'Input.dispatchKeyEvent', keyupEvent),
-            chrome.debugger.sendCommand({ tabId: tabs[0].id }, 'Input.dispatchKeyEvent', keydownEvent2),
-            chrome.debugger.sendCommand({ tabId: tabs[0].id }, 'Input.dispatchKeyEvent', keyupEvent2),
-            chrome.debugger.sendCommand({ tabId: tabs[0].id }, 'Input.dispatchKeyEvent', keydownEvent3),
-            chrome.debugger.sendCommand({ tabId: tabs[0].id }, 'Input.dispatchKeyEvent', keyupEvent3)
-          ]).then(() => {
+          currentCase.keySequence.forEach(function(item) {
+              casePromises.push(chrome.debugger.sendCommand({ tabId: tabs[0].id }, item.command, item.key));
+          });
+          Promise.all(casePromises).then(() => {
             chrome.debugger.detach({ tabId: tabs[0].id });
+            casePromises = [];
           });
       });
+    }
+  } else if (message.command === 'CaseChanged') {
+    currentCase = message.case
+    casePromises = [];
+    sendResponse();
   }
   return true;
 });
