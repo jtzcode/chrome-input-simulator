@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="button.css">
+    <link rel="stylesheet" href="app.css">
   </head>
   <body>
     <label>Select a Case: </label>
     <select id="cases" onchange="getSelectedCase(this)"></select>
     <button id="input-btn" disabled>Start Input</button>
     <button id="clear-btn" disabled>Clear Input</button>
+    <div class="verify-container">
+      <input id="verify-input" type="text" class="verify"/>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>

@@ -2,8 +2,10 @@
 let inputBtn = document.getElementById("input-btn");
 let clearBtn = document.getElementById("clear-btn");
 let caseDropdown = document.getElementById("cases");
+let hiddenInput = document.getElementById("verify-input");
 let currentCase = null;
 let cases = null;
+var targetId = "input-text";
 
 chrome.storage.sync.get("text", ({ text }) => {
   //changeColor.style.backgroundColor = color;
@@ -55,6 +57,10 @@ function loadCases() {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     console.log("Get message from background", request);
+    if (request.message == "verify") {
+      verify(request.data.testCase, request.data.tabId);
+    }
+    return true;
 });
 
 // When the button is clicked, inject setPageBackgroundColor into current page
@@ -63,7 +69,7 @@ inputBtn.addEventListener("click", async () => {
 
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    function: startInput,
+    function: startInput
   });
   chrome.runtime.sendMessage({ command: "input" });
 });
@@ -88,8 +94,62 @@ function startInput() {
 }
 
 function clearInput() {
-  document.getElementById("input-span").innerText = "";
+  document.getElementById(targetId).value = "";
   console.log("Input cleared in current page.");
+}
+
+function verify(testCase, tab) {
+  // Copy text from content page
+  hiddenInput.value = "";
+  chrome.scripting.executeScript({
+    target: { tabId: tab },
+    function: copyInput,
+    args: [targetId]
+  }, () => {
+    hiddenInput.focus();
+    document.execCommand("paste");
+
+    // read the clipboard contents from the background
+    console.log("Text copied: ", hiddenInput.value);
+    const results = hiddenInput.value;
+    //alert(results === testCase.expected ? "Case Passed" : "Case Failed");
+    //clearInput();
+  });
+
+  // Paste text to background page
+  // let bg = chrome.runtime.getBackgroundPage((page) => {
+  //   console.log("Background page object: ", page);
+  // });        // get the background page
+  // bg.document.body.innerHTML= "";                   // clear the background page
+
+  // // add a DIV, contentEditable=true, to accept the paste action
+  // let helperdiv = bg.document.createElement("div");
+  // bg.document.body.appendChild(helperdiv);
+  // helperdiv.contentEditable = true;
+
+  // // focus the helper div's content
+  // let range = document.createRange();
+  // range.selectNode(helperdiv);
+  // window.getSelection().removeAllRanges();
+  // window.getSelection().addRange(range);
+  // helperdiv.focus();    
+
+  // // trigger the paste action
+  // bg.document.execCommand("Paste");
+}
+
+function copyInput(targetId) {
+  //document.execCommand("Copy");
+  var copyText = document.getElementById(targetId);
+
+  /* Select the text field */
+  copyText.select();
+  //copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+   /* Copy the text inside the text field */
+  //navigator.clipboard.writeText(copyText.value);
+  copied = document.execCommand('cut');
+  console.log("Copy result: ", copied);
 }
 
 loadCases();

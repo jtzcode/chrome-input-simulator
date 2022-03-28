@@ -11,3 +11,13 @@ button.current {
   box-shadow: 0 0 0 2px white,
               0 0 0 4px black;
 }
+
+.verify {
+  opacity:0;
+  filter:alpha(opacity=0);
+}
+
+.verify-container {
+  width: 0;
+  overflow: hidden;
+}

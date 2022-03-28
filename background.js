@@ -17,6 +17,7 @@ let keyupEvent3 = {
   macCharCode: 8
 };
 let currentCase = null;
+let currentTabId = null;
 let casePromises = [];
 
 
@@ -29,13 +30,15 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if(message.command === "input") {
     if (currentCase && currentCase.keySequence) {
       chrome.tabs.query({active: true}, function(tabs) {
-          chrome.debugger.attach({ tabId: tabs[0].id }, "1.0");
+          currentTabId = tabs[0].id;
+          chrome.debugger.attach({ tabId: currentTabId }, "1.0");
           currentCase.keySequence.forEach(function(item) {
-              casePromises.push(chrome.debugger.sendCommand({ tabId: tabs[0].id }, item.command, item.key));
+              casePromises.push(chrome.debugger.sendCommand({ tabId: currentTabId }, item.command, item.key));
           });
           Promise.all(casePromises).then(() => {
-            chrome.debugger.detach({ tabId: tabs[0].id });
             casePromises = [];
+            verifyCase(currentCase, currentTabId);
+            chrome.debugger.detach({ tabId: currentTabId });
           });
       });
     }
@@ -46,3 +49,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   }
   return true;
 });
+
+function verifyCase(testCase, tabId) {
+  chrome.runtime.sendMessage({ 
+    message: "verify",
+    data: {
+      "testCase": testCase,
+      "tabId": tabId
+    }
+  });
+}

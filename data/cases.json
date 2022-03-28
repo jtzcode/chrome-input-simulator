@@ -51,6 +51,7 @@
                     "macCharCode": 66
                 }
             }
-        ]
+        ],
+        "expected": "ab"
     }
 ]
